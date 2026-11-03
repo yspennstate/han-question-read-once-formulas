@@ -24,7 +24,9 @@ the formula; it is the same at every coordinate. Choosing the fan-ins so that ev
 probability at most $1/4$ gives monotone read-once formulas of depth $L$ on at most $2\cdot 7^{L-1}$ variables with
 $Q_k(f)\ge L$ for every $k$, so $\min_k Q_k(f)$ grows at least like $\log_2 n/\log_2 7$. Depth two gives the tribes
 functions, for which $\min_k Q_k$ approaches $4$ but stays below it. The Fourier entropy-influence conjecture is
-known for these formulas, so the inequality in Han's question fails on a class where the conjecture holds.
+known for these formulas, so the inequality in Han's question fails on a class where the conjecture holds. By
+contrast, the drop of the Fourier entropy under splitting on a coordinate is less than $5+\ln 4$ times the
+influence of that coordinate, for every read-once formula and every coordinate.
 \end{abstract}
 \maketitle
 
@@ -89,11 +91,14 @@ Hence $Q_k(T_{s,w})<4$ for all $s,w$, and $\sup_{s,w}\min_kQ_k(T_{s,w})=4$.
 Since the Fourier entropy-influence conjecture holds for the formulas of Theorem~\ref{thm:main} \cite{ot}, the theorem
 says nothing against the conjecture itself; it shows that the route through \eqref{eq:q} is closed, already for
 read-once formulas. The theorem also makes no use of the freedom to choose $k$: the lower bound holds at every
-coordinate.
+coordinate. The entropy form of the same inductive step behaves differently on this class: the drop of the Fourier
+entropy under splitting on $x_k$ is less than $(5+\ln4)\,I_k(f)$ for every read-once formula and every coordinate
+(Theorem~\ref{thm:split}).
 
 Section~\ref{sec:prelim} collects the facts used, Section~\ref{sec:step} proves the composition identity, and
-Section~\ref{sec:trees} proves Theorem~\ref{thm:main} and Proposition~\ref{prop:tribes}. Section~\ref{sec:check}
-describes an exact computer check of the closed form against the truth tables of small formulas.
+Section~\ref{sec:trees} proves Theorem~\ref{thm:main} and Proposition~\ref{prop:tribes}, Section~\ref{sec:split}
+proves Theorem~\ref{thm:split}, and Section~\ref{sec:check} describes exact computer checks of the closed forms
+against the truth tables of small formulas.
 
 \section{Preliminaries}\label{sec:prelim}
 
@@ -255,6 +260,178 @@ Theorem~\ref{thm:closed} always gives $Q_k\le2L$, and when every fan-in is at le
 variables, so $Q_k\le2\log_2n$ on all of these formulas.
 \end{remark}
 
+\section{The entropy split}\label{sec:split}
+
+In this section $\log$ is the natural logarithm. For $f\colon\{0,1\}^n\to\{-1,1\}$, a coordinate $k$ and
+$b\in\{0,1\}$, let $f_{k\to b}$ be the restriction of $f$ to $x_k=b$, a function of the other $n-1$ variables, and put
+\[
+D_k(f)=H(f)-\tfrac12\bigl(H(f_{k\to0})+H(f_{k\to1})\bigr).
+\]
+Since $I_j(f)=\frac12\bigl(I_j(f_{k\to0})+I_j(f_{k\to1})\bigr)$ for $j\ne k$, an inequality $D_k(f)\le K\,I_k(f)$ at one
+coordinate of every nonconstant function of a class closed under restrictions gives $H(f)\le K\,I(f)$ on that class,
+by induction on the number of variables. This is the inductive scheme behind \eqref{eq:q} \cite{han}; Gonz\'alez,
+MacManus and Pereyra \cite{gmp} isolate the inequality $D_k(f)\le K\,I_k(f)$ itself and prove it for several classes,
+while for Boolean functions in general, and for monotone ones, it is open. On read-once formulas it holds at every
+coordinate, although \eqref{eq:q} fails there.
+
+\begin{theorem}\label{thm:split}
+Let $f$ be a read-once formula over AND, OR and NOT gates of any fan-in, viewed as a $\{-1,1\}$-valued function, and
+let $k$ be a variable read by $f$. Then
+\[
+D_k(f)<(5+\log4)\,I_k(f).
+\]
+Consequently $H(f)\le(5+\log4)\,I(f)$ for every such formula.
+\end{theorem}
+
+The consequence follows from the induction above, since a restriction of a read-once formula is a read-once formula
+or a constant. The proof of the inequality has three parts: an expression for $D_k$ through pairs of coefficients, a
+one-gate identity parallel to Proposition~\ref{prop:step}, and an estimate of the function that weighs the pairs.
+
+Let $\eta(x)=x\log(1/x)$ for $x>0$, $\eta(0)=0$, and for $l,m\ge0$
+\[
+\Phi(l,m)=\eta(l)+\eta(m)-\tfrac12\Bigl[\eta\bigl((\sqrt l+\sqrt m)^2\bigr)+\eta\bigl((\sqrt l-\sqrt m)^2\bigr)\Bigr].
+\]
+
+\begin{lemma}\label{lem:split}
+$D_k(f)=\sum_{S\not\ni k}\Phi\bigl(\hf(S)^2,\hf(S\cup\{k\})^2\bigr)$. The function $\Phi$ is symmetric,
+$\Phi(l,0)=0$, and $\Phi(\lambda l,\lambda m)=\lambda\,\Phi(l,m)$ for $\lambda>0$. In particular $D_k(-f)=D_k(f)$, and
+$D_k$ is unchanged when an input variable is replaced by its negation.
+\end{lemma}
+
+\begin{proof}
+For $S\not\ni k$ the character $\chi_{S\cup\{k\}}$ equals $\chi_S$ at $x_k=0$ and $-\chi_S$ at $x_k=1$, so
+$\widehat{f_{k\to0}}(S)=\hf(S)+\hf(S\cup\{k\})$ and $\widehat{f_{k\to1}}(S)=\hf(S)-\hf(S\cup\{k\})$. With
+$a=\hf(S)$ and $b=\hf(S\cup\{k\})$ the squares of these two numbers are $(|a|+|b|)^2$ and $(|a|-|b|)^2$ in some order,
+and summing over $S$ gives the expression for $D_k$. Symmetry and $\Phi(l,0)=0$ are immediate. Homogeneity follows
+from $\eta(\lambda x)=\lambda\eta(x)+\lambda x\log(1/\lambda)$ and
+$l+m=\frac12\bigl[(\sqrt l+\sqrt m)^2+(\sqrt l-\sqrt m)^2\bigr]$. The last statement holds because $D_k$ depends only on
+the squares of the coefficients, as in Lemma~\ref{lem:inv}.
+\end{proof}
+
+\begin{proposition}\label{prop:stepD}
+In the setting of Proposition~\ref{prop:step}, let $I=I_k(f_1)$ and $c=1-2\mu$. Then
+\[
+D_k(F)=\beta\Bigl[D_k(f_1)-\Phi(c^2,I^2)+\Phi\bigl(4(1-\mu)^2,I^2\bigr)\Bigr]-\beta^2\,\Phi\bigl(4(1-\mu)^2,I^2\bigr)
++\Phi\bigl((1-2p)^2,\beta^2I^2\bigr).
+\]
+\end{proposition}
+
+\begin{proof}
+Keep the notation of the proof of Proposition~\ref{prop:step}. For $(A,B)\ne(\emptyset,\emptyset)$ the coefficients
+found there and the homogeneity of $\Phi$ give
+\[
+\Phi\bigl(\widehat F(A\cup B)^2,\widehat F(A\cup B\cup\{k\})^2\bigr)=4\,\widehat G(B)^2\,
+\Phi\bigl(\widehat u(A)^2,\widehat u(A\cup\{k\})^2\bigr),
+\]
+while the pair $A=B=\emptyset$ gives $\Phi\bigl((1-2p)^2,4\widehat u(\{k\})^2\beta^2\bigr)=\Phi\bigl((1-2p)^2,\beta^2I^2\bigr)$,
+since $\widehat G(\emptyset)=\beta$ and $\widehat u(\{k\})^2=I^2/4$. Summing the displayed expression over all pairs,
+removing the pair $A=B=\emptyset$ and using $\sum_B\widehat G(B)^2=\beta$,
+\[
+D_k(F)=4\beta\sum_A\Phi\bigl(\widehat u(A)^2,\widehat u(A\cup\{k\})^2\bigr)-4\beta^2\,\Phi\bigl((1-\mu)^2,I^2/4\bigr)
++\Phi\bigl((1-2p)^2,\beta^2I^2\bigr).
+\]
+By \eqref{eq:pm}, $\widehat{f_1}(A)^2=4\widehat u(A)^2$ for $A\ne\emptyset$ and
+$\widehat{f_1}(A\cup\{k\})^2=4\widehat u(A\cup\{k\})^2$ for all $A$, while $\widehat{f_1}(\emptyset)=c$ and
+$\widehat{f_1}(\{k\})^2=I^2$. Hence, by homogeneity,
+\[
+4\sum_A\Phi\bigl(\widehat u(A)^2,\widehat u(A\cup\{k\})^2\bigr)=D_k(f_1)-\Phi(c^2,I^2)+\Phi\bigl(4(1-\mu)^2,I^2\bigr),
+\]
+and $4\Phi\bigl((1-\mu)^2,I^2/4\bigr)=\Phi\bigl(4(1-\mu)^2,I^2\bigr)$. Substituting gives the claim.
+\end{proof}
+
+\begin{lemma}\label{lem:path}
+Let $f$ and $k$ be as in Theorem~\ref{thm:split}. There are $L\ge0$, $\beta_1,\dots,\beta_L\in(0,1]$ and
+$\nu_1,\dots,\nu_L\in(0,1)$ such that the numbers defined by $I_0=1$, $c_0=0$, $D_0=0$ and, for $1\le l\le L$,
+\begin{align*}
+I_l&=\beta_lI_{l-1},\qquad c_l=1-2\nu_l\beta_l,\\
+D_l&=\beta_l\Bigl[D_{l-1}-\Phi(c_{l-1}^2,I_{l-1}^2)+\Phi(4\nu_l^2,I_{l-1}^2)\Bigr]-\beta_l^2\,\Phi(4\nu_l^2,I_{l-1}^2)
++\Phi(c_l^2,I_l^2),
+\end{align*}
+satisfy $I_L=I_k(f)$ and $D_L=D_k(f)$.
+\end{lemma}
+
+\begin{proof}
+Let $T_0=x_k$, and let $T_1,\dots,T_L$ be the $\{0,1\}$-valued subformulas computed at the AND and OR gates of fan-in
+at least two on the path from $x_k$ to the output, in order. Each subformula of a read-once formula is unate in every
+variable it reads, and since there are no constants among the inputs every subformula has expectation in $(0,1)$.
+At the $l$-th of these gates the child containing $x_k$ computes $T_{l-1}$ or $1-T_{l-1}$, according to the parity
+of the NOT gates between, and the other children compute functions of disjoint sets of variables. If the gate is an
+AND gate, write its value as $(1-\tilde g)G_l$, where $\tilde g$ is $1$ minus the value of that child and $G_l$ is the
+product of the values of the other children. If it is an OR gate, write $1$ minus its value as $(1-\tilde g)G_l$,
+where now $\tilde g$ is the value of that child and $G_l$ the product of $1$ minus the values of the other children.
+In both cases $\tilde g\in\{T_{l-1},1-T_{l-1}\}$, so $1-2\tilde g=\pm(1-2T_{l-1})$, and $(1-\tilde g)G_l$ is $T_l$ or
+$1-T_l$, so $1-2(1-\tilde g)G_l=\pm(1-2T_l)$. Put $\beta_l=\E G_l\in(0,1]$ and $\nu_l=1-\E\tilde g\in(0,1)$.
+
+By induction on $l$, $I_k(1-2T_l)=I_l>0$, $D_k(1-2T_l)=D_l$ and $\widehat{\ }(\emptyset)^2=c_l^2$ for $1-2T_l$. At
+$l=0$ the function $1-2x_k$ has the coefficients $0$ at $\emptyset$ and $1$ at $\{k\}$ and no others, so
+$I_0=1$, $c_0=0$ and $D_0=\Phi(0,1)=0$. For the inductive step apply Propositions~\ref{prop:step}
+and~\ref{prop:stepD} with $g=\tilde g$ and $G=G_l$; then $1-\mu=\nu_l$, $c^2=(1-2\E\tilde g)^2=c_{l-1}^2$ and
+$p=\nu_l\beta_l$, and by Lemma~\ref{lem:split} the signs do not matter. Finally $f=\pm(1-2T_L)$.
+\end{proof}
+
+\begin{lemma}\label{lem:phi}
+For $0<t\le1$,
+\[
+t\bigl(4\log2+\log(1/t)\bigr)\le\Phi(1,t)\le t\bigl(3+\log(1/t)\bigr).
+\]
+Consequently $\Phi(l,m)\le m\bigl(3+\log_+(l/m)\bigr)$ for $l\ge0$ and $m>0$, where $\log_+=\max(\log,0)$.
+\end{lemma}
+
+\begin{proof}
+Let $b=\sqrt t$. Then $\Phi(1,t)=t\log(1/t)+\rho(b)$ with $\rho(b)=(1+b)^2\log(1+b)+(1-b)^2\log(1-b)$, and
+$\rho(1)=4\log2$. With $\log(1+b)=\sum_{j\ge1}a_jb^j$, $a_j=(-1)^{j+1}/j$, and $a_0=a_{-1}=0$, the coefficient of $b^j$
+in $(1+b)^2\log(1+b)$ is $e_j=a_j+2a_{j-1}+a_{j-2}$, and the odd powers cancel in $\rho$, so that
+$\rho(b)=2\sum_{i\ge1}e_{2i}b^{2i}$ for $0\le b<1$. Here $e_2=3/2$ and, for $i\ge2$,
+\[
+e_{2i}=\frac{2}{2i-1}-\frac1{2i-2}-\frac1{2i}<0
+\]
+by the strict convexity of $1/x$. Hence $\rho(b)\le3b^2$, which is the upper bound, and $\rho(b)/b^2$ is nonincreasing
+on $(0,1)$, so by continuity $\rho(b)/b^2\ge\rho(1)=4\log 2$, which is the lower bound.
+
+For the second statement we may assume $l>0$. If $l\ge m$, homogeneity and the upper bound with $t=m/l$ give
+$\Phi(l,m)=l\,\Phi(1,m/l)\le m\bigl(3+\log(l/m)\bigr)$. If $l<m$, then $\Phi(l,m)=m\,\Phi(1,l/m)\le3m$, because
+$t(3+\log(1/t))$ is increasing on $(0,1]$ and equals $3$ at $t=1$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:split}]
+Take the numbers of Lemma~\ref{lem:path} and put $r_l=D_l/I_l$ and $\Psi_l=\Phi(c_l^2,I_l^2)/I_l$. Dividing the
+recursion for $D_l$ by $I_l=\beta_lI_{l-1}$ gives
+\[
+r_l-\Psi_l=r_{l-1}-\Psi_{l-1}+(1-\beta_l)\,\frac{\Phi(4\nu_l^2,I_{l-1}^2)}{I_{l-1}}.
+\]
+Since $r_0=\Psi_0=0$ and $1-\beta_l=(I_{l-1}-I_l)/I_{l-1}$,
+\begin{equation}\label{eq:tele}
+\frac{D_k(f)}{I_k(f)}=\sum_{l=1}^L\bigl(I_{l-1}-I_l\bigr)\,\frac{\Phi(4\nu_l^2,I_{l-1}^2)}{I_{l-1}^2}
++\frac{\Phi(c_L^2,I_L^2)}{I_L}.
+\end{equation}
+Let $\gamma(x)=3+\log4+2\log(1/x)$, a decreasing function on $(0,1]$. Since $4\nu_l^2\le4$ and $I_{l-1}\le1$,
+Lemma~\ref{lem:phi} gives $\Phi(4\nu_l^2,I_{l-1}^2)/I_{l-1}^2\le\gamma(I_{l-1})$, and so the $l$-th term of the sum is
+at most $\int_{I_l}^{I_{l-1}}\gamma(x)\,dx$. With $a=I_L$ the sum is therefore at most
+\[
+\int_a^1\gamma(x)\,dx=(5+\log4)(1-a)+2a\log a .
+\]
+Since $c_L^2\le1$, Lemma~\ref{lem:phi} also gives $\Phi(c_L^2,I_L^2)/I_L\le a\bigl(3+2\log(1/a)\bigr)$. Adding,
+\[
+\frac{D_k(f)}{I_k(f)}\le5+\log4-(2+\log4)\,I_k(f)<5+\log4. \qedhere
+\]
+\end{proof}
+
+\begin{remark}
+On the formulas of Theorem~\ref{thm:main} the ratio $Q_k$ is at least the depth at every coordinate, while
+$D_k/I_k<6.39$. The constant $5+\log4=6.386\ldots$ is not sharp. If $\nu_l=1/2$ for every $l$, the sum in \eqref{eq:tele} is a
+Riemann sum for
+\[
+\int_0^1\frac{\Phi(1,x^2)}{x^2}\,dx=\frac{\pi^2}{2}=4.9348\ldots .
+\]
+If every gate on the path from $x_k$ to the output is an AND gate followed by a NOT gate, with $\beta_l=1-\delta$
+(the other children can realize this value up to an arbitrarily small error, since the maps $q\mapsto q/2$ and
+$q\mapsto(1+q)/2$ produce every dyadic rational in $(0,1)$ as the expectation of a read-once formula), then $\nu_l$
+tends to $1/(2-\delta)$, and the values of
+$D_k/I_k$ given by Lemma~\ref{lem:path} increase to $\pi^2/2$ as $\delta\to0$; for instance $4.9250$ at
+$\delta=0.1$ and $4.93480$ at $\delta=0.001$. A search over finite sequences $(\beta_l)$ found no value above $\pi^2/2$.
+We do not know whether $\pi^2/2$ is the supremum of $D_k(f)/I_k(f)$ over read-once formulas.
+\end{remark}
+
 \section{Exact check}\label{sec:check}
 
 The script \texttt{q31\_check.py} computes $Q_k$ from the truth table. With $F=2^n\hf$, the integer Walsh-Hadamard
@@ -267,6 +444,15 @@ for $n\le8$, every tribes function $T_{s,w}$ with $2\le sw\le20$ against Proposi
 formulas $T_L$ with $n\le20$ and depth up to $4$ against Theorem~\ref{thm:closed}; at every coordinate for $n\le14$,
 and at the first and last coordinates above that. All $60$ comparisons agree. The script \texttt{deep\_trees.py}
 evaluates the closed form along the family of the proof of Theorem~\ref{thm:main} up to depth $80$.
+
+For Section~\ref{sec:split}, \texttt{q31\_tree\_entropy.py} and \texttt{q31\_readonce\_check.py} compare $D_k$ and
+$I_k$ given by Lemma~\ref{lem:path} with their values from truth tables, on $15$ alternating formulas and on $60$
+random read-once formulas of depth at most $5$ with children of unequal sizes ($463$ coordinates); the largest
+difference is $2.6\cdot10^{-15}$. The script \texttt{q31\_readonce\_bound.py} checks \eqref{eq:tele} at $400$
+digits on $240$ random sequences $(\beta_l)$ and the bound of Theorem~\ref{thm:split} on $323$ truth-table
+coordinates (largest ratio $4.42$), \texttt{q31\_lemma\_a\_analytic.py} checks Lemma~\ref{lem:phi}, and
+\texttt{q31\_readonce\_pi2.py} and \texttt{q31\_readonce\_beam.py} compute the values quoted in the last remark of
+Section~\ref{sec:split}.
 
 \section*{Acknowledgments and funding}
 
