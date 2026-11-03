@@ -1,0 +1,303 @@
+\documentclass[11pt]{amsart}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\hf}{\widehat{f}}
+\title[A question of Han on Fourier coefficients]{Read-once formulas and a question of Han on the Fourier
+entropy-influence conjecture}
+\author{Yitzchak Shmalo}
+\begin{document}
+\begin{abstract}
+For a Boolean function $f$ and a coordinate $k$, let $Q_k(f)=\sum_{S\not\ni k}|\hf(S)\hf(S\cup\{k\})|/I_k(f)$,
+where $I_k(f)$ is the influence of $k$. In his proof of a new bound towards the Fourier entropy-influence
+conjecture, Han asked whether there is a universal constant $c$ such that every Boolean function has a coordinate
+$k$ with $Q_k(f)\le c$, and observed that this would imply the conjecture. We show that the answer is negative. For
+balanced alternating read-once AND-OR formulas we compute $Q_k$ exactly by a one-step recursion over the levels of
+the formula; it is the same at every coordinate. Choosing the fan-ins so that every gate below the root is true with
+probability at most $1/4$ gives monotone read-once formulas of depth $L$ on at most $2\cdot 7^{L-1}$ variables with
+$Q_k(f)\ge L$ for every $k$, so $\min_k Q_k(f)$ grows at least like $\log_2 n/\log_2 7$. Depth two gives the tribes
+functions, for which $\min_k Q_k$ approaches $4$ but stays below it. The Fourier entropy-influence conjecture is
+known for these formulas, so the inequality in Han's question fails on a class where the conjecture holds.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+
+Let $f\colon\{0,1\}^n\to\{-1,1\}$ and write $f=\sum_{S\subseteq[n]}\hf(S)\chi_S$ with $\chi_S(x)=(-1)^{\sum_{i\in S}x_i}$,
+under the uniform measure. The total influence is $I(f)=\sum_S|S|\hf(S)^2=\sum_k I_k(f)$, where
+\[
+I_k(f)=\Pr_x\bigl[f(x)\ne f(x\oplus e_k)\bigr]=\sum_{S\ni k}\hf(S)^2 ,
+\]
+and the Fourier entropy is $H(f)=\sum_S\hf(S)^2\log(1/\hf(S)^2)$. The Fourier entropy-influence conjecture of
+Friedgut and Kalai \cite{fk} asserts that $H(f)\le C\,I(f)$ for a universal constant $C$. It remains open in general;
+Kelman, Kindler, Lifshitz, Minzer and Safra \cite{kklms} proved related statements up to a logarithmic factor, and
+the conjecture is known for several classes, among them read-once formulas over gates of bounded arity, by the
+composition theorem of O'Donnell and Tan \cite{ot}. Recent work of Gonz\'alez, MacManus and Pereyra \cite{gmp} adds
+further classes.
+
+Han \cite{han} proved that $H(f)=O\bigl(I(f)+\sum_k I_k(f)\log(1/I_k(f))\bigr)$; related results are discussed by
+Keller, Mossel and Schlank \cite{kms}. In the course of the proof he isolates
+a coordinate $k$ and the pairs of coefficients $\hf(S)$, $\hf(S\cup\{k\})$, and observes that the following inequality
+would lead to the conjecture by an inductive argument.
+
+\medskip
+\noindent\textbf{Question} (Han \cite[Question~3.1]{han}). Is there a universal constant $c>0$ such that every
+Boolean function $f$ on $n$ variables has a coordinate $k\in[n]$ with
+\begin{equation}\label{eq:q}
+\sum_{S\not\ni k}\bigl|\hf(S)\hf(S\cup\{k\})\bigr|\le c\,I_k(f)\,?
+\end{equation}
+\medskip
+
+The function $x_1\wedge\dots\wedge x_n$ shows that $c\ge 2$ would be needed \cite{han}. For $I_k(f)>0$ write
+\[
+Q_k(f)=\frac{1}{I_k(f)}\sum_{S\not\ni k}\bigl|\hf(S)\hf(S\cup\{k\})\bigr| ,
+\]
+so that \eqref{eq:q} asks for $\min_k Q_k(f)\le c$, the minimum taken over the relevant coordinates.
+
+\begin{theorem}\label{thm:main}
+For every $L\ge1$ there is a monotone read-once formula $f_L$ of depth $L$, with alternating AND and OR gates of
+fan-in at most $7$, on $n\le 2\cdot7^{L-1}$ variables, such that $Q_k(f_L)\ge L$ for every coordinate $k$. In
+particular
+\[
+\min_k Q_k(f_L)\ \ge\ 1+\frac{\log_2 n-1}{\log_2 7},
+\]
+and the answer to Han's question is negative.
+\end{theorem}
+
+The formulas are described in Section~\ref{sec:trees}, where $Q_k$ is computed exactly for every balanced
+alternating read-once formula (Theorem~\ref{thm:closed}). The computation rests on a composition identity for a
+single gate (Proposition~\ref{prop:step}), which uses only that the Fourier transform of a product of functions of
+disjoint sets of variables factors, and that the degree-one coefficient of a unate function is its influence.
+Depth one recovers Han's example, and depth two gives the tribes functions.
+
+\begin{proposition}\label{prop:tribes}
+Let $T_{s,w}(x)=\bigvee_{j=1}^s\bigwedge_{i=1}^w x_{j,i}$, viewed as a $\{-1,1\}$-valued function, and
+$\alpha=1-2^{-w}$. For every coordinate $k$,
+\[
+Q_k(T_{s,w})=\begin{cases}2-2^{2-w}, & \alpha^s\ge 1/2,\\ 4-2^{2-w}-4\alpha^s, & \alpha^s<1/2.\end{cases}
+\]
+Hence $Q_k(T_{s,w})<4$ for all $s,w$, and $\sup_{s,w}\min_kQ_k(T_{s,w})=4$.
+\end{proposition}
+
+Since the Fourier entropy-influence conjecture holds for the formulas of Theorem~\ref{thm:main} \cite{ot}, the theorem
+says nothing against the conjecture itself; it shows that the route through \eqref{eq:q} is closed, already for
+read-once formulas. The theorem also makes no use of the freedom to choose $k$: the lower bound holds at every
+coordinate.
+
+Section~\ref{sec:prelim} collects the facts used, Section~\ref{sec:step} proves the composition identity, and
+Section~\ref{sec:trees} proves Theorem~\ref{thm:main} and Proposition~\ref{prop:tribes}. Section~\ref{sec:check}
+describes an exact computer check of the closed form against the truth tables of small formulas.
+
+\section{Preliminaries}\label{sec:prelim}
+
+We use $\{0,1\}$-valued functions alongside $\{-1,1\}$-valued ones. For $g\colon\{0,1\}^V\to\{0,1\}$ we write
+$\widehat g(S)=\E[g\chi_S]$ as well, and associate with $g$ the function $1-2g\colon\{0,1\}^V\to\{-1,1\}$, whose
+coefficients are
+\begin{equation}\label{eq:pm}
+\widehat{1-2g}(\emptyset)=1-2\E g,\qquad \widehat{1-2g}(S)=-2\widehat g(S)\quad(S\ne\emptyset).
+\end{equation}
+
+\begin{lemma}\label{lem:inv}
+$Q_k(-f)=Q_k(f)$, and $Q_k$ is unchanged when an input variable $x_i$ is replaced by $1-x_i$.
+\end{lemma}
+
+\begin{proof}
+Both operations multiply each $\hf(S)$ by a sign, by $-1$ in the first case and by $(-1)^{[i\in S]}$ in the second.
+Neither the influences nor the absolute values in $Q_k$ change.
+\end{proof}
+
+A function is \emph{unate in $k$} if it is nondecreasing in $x_k$ or nonincreasing in $x_k$.
+
+\begin{lemma}\label{lem:unate}
+If $f\colon\{0,1\}^n\to\{-1,1\}$ is unate in $k$, then $|\hf(\{k\})|=I_k(f)$.
+\end{lemma}
+
+\begin{proof}
+Write $x^{(b)}$ for $x$ with $x_k$ set to $b$. Then $\hf(\{k\})=\tfrac12\E_x\bigl[f(x^{(0)})-f(x^{(1)})\bigr]$. The
+difference takes values in $\{0,2\}$ or in $\{0,-2\}$, according to the direction of monotonicity, and it is nonzero
+exactly when $k$ is pivotal at $x$. So $|\hf(\{k\})|=\Pr[f(x^{(0)})\ne f(x^{(1)})]=I_k(f)$.
+\end{proof}
+
+\begin{lemma}\label{lem:prod}
+Let $V_1$, $V_2$ be disjoint sets of variables, $u$ a function of the variables in $V_1$ and $v$ a function of those
+in $V_2$. For $A\subseteq V_1$ and $B\subseteq V_2$, $\widehat{uv}(A\cup B)=\widehat u(A)\,\widehat v(B)$. If $v$ is
+$\{0,1\}$-valued then $\sum_{B\subseteq V_2}\widehat v(B)^2=\E v$.
+\end{lemma}
+
+\begin{proof}
+$\chi_{A\cup B}=\chi_A\chi_B$ and the two factors of $uv\,\chi_{A\cup B}$ are independent. The second statement is
+Parseval's identity and $v^2=v$.
+\end{proof}
+
+\section{One gate}\label{sec:step}
+
+\begin{proposition}\label{prop:step}
+Let $V_1$, $V_2$ be disjoint sets of variables and $k\in V_1$. Let $g\colon\{0,1\}^{V_1}\to\{0,1\}$ be unate in $k$
+with $I_k(1-2g)>0$, and let $G\colon\{0,1\}^{V_2}\to\{0,1\}$ have $\beta=\E G>0$. Put $\mu=\E g$,
+\[
+h=(1-g)\,G,\qquad p=\E h=(1-\mu)\beta,\qquad f_1=1-2g,\qquad F=1-2h .
+\]
+Then $I_k(F)=\beta\,I_k(f_1)$ and
+\begin{equation}\label{eq:step}
+Q_k(F)=Q_k(f_1)+2(1-\mu)-|1-2\mu|-2p+|1-2p| .
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Write $u=1-g$, and let $A$ range over subsets of $V_1\setminus\{k\}$ and $B$ over subsets of $V_2$. Put
+$I=I_k(f_1)$. By \eqref{eq:pm} and Lemma~\ref{lem:unate}, $|\widehat u(\{k\})|=|\widehat g(\{k\})|=I/2$, and
+$\widehat u(\emptyset)=1-\mu$, $\widehat u(A)=-\widehat g(A)$ for $A\ne\emptyset$.
+
+By \eqref{eq:pm} and Lemma~\ref{lem:prod}, $\widehat F(A\cup B\cup\{k\})=-2\,\widehat u(A\cup\{k\})\widehat G(B)$
+for all $A,B$, and $\widehat F(A\cup B)=-2\,\widehat u(A)\widehat G(B)$ unless $A=B=\emptyset$, while
+$\widehat F(\emptyset)=1-2p$. Hence
+\[
+I_k(F)=\sum_{A,B}4\,\widehat u(A\cup\{k\})^2\widehat G(B)^2=4\beta\sum_A\widehat g(A\cup\{k\})^2=\beta I ,
+\]
+using $\sum_B\widehat G(B)^2=\beta$ and $I=\sum_A\widehat{f_1}(A\cup\{k\})^2=4\sum_A\widehat g(A\cup\{k\})^2$.
+
+For the numerator $N(F)=\sum_{S\not\ni k}|\widehat F(S)\widehat F(S\cup\{k\})|$, the pair $A=B=\emptyset$ contributes
+$|1-2p|\cdot2|\widehat u(\{k\})|\beta=|1-2p|\,I\beta$, and every other pair contributes
+$4|\widehat u(A)\widehat u(A\cup\{k\})|\widehat G(B)^2$. Summing the latter over all pairs and removing the pair
+$A=B=\emptyset$,
+\[
+N(F)=4\beta\sum_A|\widehat u(A)\widehat u(A\cup\{k\})|-4(1-\mu)\tfrac I2\beta^2+|1-2p|\,I\beta .
+\]
+On the other hand, by \eqref{eq:pm},
+\begin{align*}
+N(f_1)&=|1-2\mu|\,I+4\sum_{A\ne\emptyset}|\widehat g(A)\widehat g(A\cup\{k\})|,\\
+4\sum_A|\widehat u(A)\widehat u(A\cup\{k\})|&=2(1-\mu)I+4\sum_{A\ne\emptyset}|\widehat g(A)\widehat g(A\cup\{k\})| ,
+\end{align*}
+so $4\sum_A|\widehat u(A)\widehat u(A\cup\{k\})|=N(f_1)+2(1-\mu)I-|1-2\mu|I$. Substituting, and using
+$(1-\mu)\beta=p$,
+\[
+N(F)=\beta\bigl(N(f_1)+2(1-\mu)I-|1-2\mu|I\bigr)-2p\,\beta I+|1-2p|\,\beta I .
+\]
+Dividing by $I_k(F)=\beta I$ gives \eqref{eq:step}.
+\end{proof}
+
+\section{Alternating read-once formulas}\label{sec:trees}
+
+Let $s_1,\dots,s_L\ge1$ be integers. Define $\{0,1\}$-valued functions $T_0,\dots,T_L$ by letting $T_0$ be a single
+variable and $T_l$ the NOR of $s_l$ copies of $T_{l-1}$ on disjoint sets of variables,
+\[
+T_l=\prod_{j=1}^{s_l}\bigl(1-T_{l-1}^{(j)}\bigr).
+\]
+Thus $T_L$ is a read-once formula on $n=s_1\cdots s_L$ variables, and every variable is read at depth $L$. Each $T_l$ is
+unate in every variable: $T_0$ is, and a NOR of unate functions of disjoint variables is unate, with the direction
+reversed. Let $p_l=\E T_l$, so that
+\[
+p_0=\tfrac12,\qquad p_l=(1-p_{l-1})^{s_l}\quad(1\le l\le L).
+\]
+Replacing the inputs by their negations at every other level turns $T_L$, or its negation, into a monotone formula
+with alternating AND and OR gates, and by Lemma~\ref{lem:inv} this does not change $Q_k$.
+
+\begin{theorem}\label{thm:closed}
+For every coordinate $k$ of $f=1-2T_L$,
+\[
+Q_k(f)=2L-1-4\sum_{l=1}^{L-1}p_l-2p_L+|1-2p_L| .
+\]
+If $p_L\le1/2$ this equals $2L-4\sum_{l=1}^Lp_l$.
+\end{theorem}
+
+\begin{proof}
+Fix $k$. For each $l\ge1$ the variable $k$ lies in exactly one of the $s_l$ copies of $T_{l-1}$ that make up $T_l$;
+call it $g$, and let $G$ be the product of $1-T_{l-1}^{(j)}$ over the other copies, so that
+$\beta=\E G=(1-p_{l-1})^{s_l-1}>0$ and $T_l=(1-g)G$. Write $q_l$ for $Q_k(1-2T_l)$, where $T_l$ is the gate at level
+$l$ above $k$. Proposition~\ref{prop:step} applies, with $\mu=p_{l-1}$ and $p=p_l$, and gives
+\[
+q_l=q_{l-1}+2(1-p_{l-1})-|1-2p_{l-1}|-2p_l+|1-2p_l| ,
+\]
+together with $I_k(1-2T_l)>0$ for the next step. At level $0$ the function is $1-2x_k$, whose only coefficient besides
+$\widehat{\ }(\{k\})$ is $\widehat{\ }(\emptyset)=0$, so $q_0=0$. Summing over $l=1,\dots,L$, the sum telescopes:
+\[
+q_L=2L-2\sum_{l=0}^{L-1}p_l-\sum_{l=0}^{L-1}|1-2p_l|-2\sum_{l=1}^Lp_l+\sum_{l=1}^L|1-2p_l| ,
+\]
+and with $p_0=1/2$ this is the stated formula.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:tribes}]
+With $L=2$, $s_1=w$ and $s_2=s$, $T_2$ is the NOR of $s$ copies of $\bigwedge_i(1-x_{j,i})$. After the substitution
+$x\mapsto1-x$ it is the negation of $T_{s,w}$, so by Lemma~\ref{lem:inv} $Q_k(T_{s,w})=Q_k(1-2T_2)$. Here
+$p_1=2^{-w}$ and $p_2=\alpha^s$, and Theorem~\ref{thm:closed} gives
+$Q_k=3-2^{2-w}-2\alpha^s+|1-2\alpha^s|$, which is the stated formula. Both branches are below $4$. Taking $w\to\infty$
+and $s=4^w$, so that $\alpha^s\le e^{-2^w}\to0$, gives values tending to $4$.
+\end{proof}
+
+With $L=1$ and $s_1=n$ the same theorem gives $Q_k=2-2^{2-n}$ for $x_1\wedge\dots\wedge x_n$, Han's example.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Choose $s_l$, for $l=1,\dots,L$ in turn, as the least integer $s\ge1$ with $(1-p_{l-1})^s\le1/4$. Then $s_1=2$ and
+$p_1=1/4$. We claim that $3/16<p_l\le1/4$ and $s_l\le7$ for $2\le l\le L$. Suppose $3/16<p_{l-1}\le1/4$ (true for
+$l=2$). By the choice of $s_l$, $p_l\le1/4$, and $(1-p_{l-1})^{s_l-1}>1/4$, so
+$p_l>(1-p_{l-1})/4\ge3/16$. Moreover $1-p_{l-1}<13/16$ gives $(13/16)^{s_l-1}>1/4$, that is
+$s_l-1<\log4/\log(16/13)<6.7$, so $s_l\le7$.
+
+Since $p_L\le1/4$, Theorem~\ref{thm:closed} gives, for every $k$,
+\[
+Q_k(f_L)=2L-4\sum_{l=1}^Lp_l\ \ge\ 2L-L=L ,
+\]
+where $f_L=1-2T_L$, made monotone with alternating AND and OR gates as described above. Finally
+$\log_2n=\log_2 2+\sum_{l\ge2}\log_2s_l\le1+(L-1)\log_27$.
+\end{proof}
+
+\begin{remark}
+The fan-ins chosen in the proof are $2,5,6,7,6,6,\dots$, and $Q_k$ grows by about $1.13$ per level: at depth $80$ the
+formula has $\log_2n\approx209$ and $Q_k\approx90.2$, so $Q_k\approx0.43\log_2n$ there. Conversely, the formula of
+Theorem~\ref{thm:closed} always gives $Q_k\le2L$, and when every fan-in is at least $2$ the formula has at least $2^L$
+variables, so $Q_k\le2\log_2n$ on all of these formulas.
+\end{remark}
+
+\section{Exact check}\label{sec:check}
+
+The script \texttt{q31\_check.py} computes $Q_k$ from the truth table. With $F=2^n\hf$, the integer Walsh-Hadamard
+transform of $f$,
+\[
+Q_k(f)=\frac{\sum_{S\not\ni k}|F(S)F(S\cup\{k\})|}{\sum_{S\ni k}F(S)^2},
+\]
+a ratio of integers, which the script compares with the closed forms as exact rationals. It checks the AND function
+for $n\le8$, every tribes function $T_{s,w}$ with $2\le sw\le20$ against Proposition~\ref{prop:tribes}, and $22$
+formulas $T_L$ with $n\le20$ and depth up to $4$ against Theorem~\ref{thm:closed}; at every coordinate for $n\le14$,
+and at the first and last coordinates above that. All $60$ comparisons agree. The script \texttt{deep\_trees.py}
+evaluates the closed form along the family of the proof of Theorem~\ref{thm:main} up to depth $80$.
+
+\section*{Acknowledgments and funding}
+
+This research was supported by the European Research Council (ERC) under the European Union's Horizon Europe research and innovation programme (grant agreement No.~101041711), by the Simons Foundation as part of the Collaboration on the Mathematical and Scientific Foundations of Deep Learning, by Heights Labs, by Convex Nexus Capital, by the Israel Science Foundation (grant number 2258/19), and by the Israel Science Foundation (ISF Grant 4101/25).
+
+\section*{Declaration of competing interest}
+
+The author holds equity in Heights Labs and in Convex Nexus Capital and has a management role at Convex Nexus Capital. These entities are included in the funding declaration above.
+
+\section*{Declaration of generative AI and AI-assisted technologies}
+
+Anthropic Claude AI systems were used to develop the mathematical derivations, write and run the numerical checks, perform internal consistency and literature reviews, and write and prepare this manuscript and its publication files. The author selected the problem and directed the work; the author did not carry out the mathematics or the writing. Responsibility for submission or publication rests with the author. The AI-assisted internal reviews, compilation checks and rendered-page inspections are not external peer review or formal verification.
+
+\section*{Data and code availability}
+
+The checks of Section~\ref{sec:check} are produced by the scripts in the \texttt{code} directory of the repository
+\[
+\texttt{github.com/yspennstate/han-question-read-once-formulas}.
+\]
+
+\begin{thebibliography}{9}
+\bibitem{fk} E.~Friedgut and G.~Kalai, \emph{Every monotone graph property has a sharp threshold}, Proc. Amer. Math.
+Soc. \textbf{124} (1996), 2993--3002.
+\bibitem{gmp} M.~J.~Gonz\'alez, P.~MacManus and M.~C.~Pereyra, \emph{Further evidence towards the Fourier
+entropy-influence conjecture}, arXiv:2606.00246, 2026.
+\bibitem{han} X.~Han, \emph{A new bound for the Fourier-entropy-influence conjecture}, arXiv:2312.08271v2, 2025.
+\bibitem{kms} N.~Keller, E.~Mossel and T.~Schlank, \emph{A note on the entropy/influence conjecture}, Discrete Math.
+\textbf{312} (2012), 3364--3372.
+\bibitem{kklms} E.~Kelman, G.~Kindler, N.~Lifshitz, D.~Minzer and M.~Safra, \emph{Towards a proof of the
+Fourier-entropy conjecture?}, Geom. Funct. Anal. \textbf{30} (2020), 1097--1138.
+\bibitem{ot} R.~O'Donnell and L.-Y.~Tan, \emph{A composition theorem for the Fourier entropy-influence conjecture},
+in: Automata, Languages, and Programming (ICALP 2013), Lecture Notes in Comput. Sci. 7965, Springer, 2013, 780--791.
+\end{thebibliography}
+\end{document}
